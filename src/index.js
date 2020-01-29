@@ -36,7 +36,7 @@ const BottomNav = createBottomTabNavigator({
         } 
     },
     CashFlow: { 
-        screen: CashFlowNav, 
+        screen: AddTransaction, 
         navigationOptions: {
             tabBarLabel:'Transactions',
             tabBarIcon: ({ tintColor }) => (
@@ -47,16 +47,17 @@ const BottomNav = createBottomTabNavigator({
     Profile: { 
         screen: ProfileNav,
         navigationOptions: {
-            tabBarLabel:'Settings',
+            tabBarLabel:'Profile',
             tabBarIcon: ({ tintColor }) => (
-                <Icon name="ios-settings" color={tintColor} size={30} />
+                <Icon name="ios-contact" color={tintColor} size={30} />
             )
         }    
     }
 }, {
     tabBarOptions: {
         activeTintColor: '#6558F5',
-        inactiveTintColor: '#788896'
+        inactiveTintColor: '#788896', 
+        showIcon: true
     }
 })
 
