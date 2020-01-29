@@ -31,9 +31,20 @@ const AppContainer = createAppContainer(BottomNav);
 
 
 class App extends React.Component {
+  state = {
+    transactionData: []
+  }
+
+  async componentDidMount() {
+    await fetch('http://localhost:3000/cashflows')
+      .then(res => res.json())
+      .then(transactionData => {
+        this.setState({ transactionData }, () => console.log(this.state.transactionData))
+      })
+  }
   render() {
     return (
-      <AppContainer />
+      <AppContainer screenProps={this.state.transactionData} />
     )
   }
 }
