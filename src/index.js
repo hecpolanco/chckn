@@ -2,6 +2,8 @@ import React from 'react'
 
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 import { createStackNavigator } from 'react-navigation-stack'
+import Icon from 'react-native-vector-icons/Ionicons'
+Icon.loadFont()
 
 import Home from './components/Home';
 import AddTransaction from './components/AddTransaction';
@@ -24,9 +26,38 @@ const ProfileNav = createStackNavigator({
 })
 
 const BottomNav = createBottomTabNavigator({
-    Home: { screen: HomeNav },
-    CashFlow: { screen: CashFlowNav },
-    Profile: { screen: ProfileNav }
+    Home: { 
+        screen: HomeNav,
+        navigationOptions: {
+            tabBarLabel:'Home',
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name="ios-home" color={tintColor} size={30} />
+            )
+        } 
+    },
+    CashFlow: { 
+        screen: CashFlowNav, 
+        navigationOptions: {
+            tabBarLabel:'Transactions',
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name="ios-card" color={tintColor} size={30} />
+            )
+        }
+    },
+    Profile: { 
+        screen: ProfileNav,
+        navigationOptions: {
+            tabBarLabel:'Settings',
+            tabBarIcon: ({ tintColor }) => (
+                <Icon name="ios-settings" color={tintColor} size={30} />
+            )
+        }    
+    }
+}, {
+    tabBarOptions: {
+        activeTintColor: '#6558F5',
+        inactiveTintColor: '#788896'
+    }
 })
 
 export default BottomNav
