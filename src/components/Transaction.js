@@ -9,7 +9,7 @@ import {
     StyleSheet
 } from 'react-native'
 
-export default class AddTransaction extends React.Component {
+export default class Transaction extends React.Component {
 
     transactions = [
         {id: 1, account_id: 1, batch_id: 1, date: "2020-01-15 00:00:00", flowtype: "Income", name: "Paycheck", amount: 1000, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
@@ -71,18 +71,20 @@ export default class AddTransaction extends React.Component {
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
                     <Text style={styles.expensesSubHeader}>Expenses</Text>
-                    <TouchableOpacity style={styles.addTransactionsButton}>
+                    <TouchableOpacity style={styles.addTransactionsButton} onPress={() => {
+            this.props.navigation.navigate('CreateTransaction')
+        }}>
                         <Text style={styles.transactionButtonText}>+</Text>
                     </TouchableOpacity>
-                    <Text style={styles.incomeTotalValue}>{'$'+this.renderTotal(this.transactions, "Income")}</Text>
-                    <Text style={styles.expensesTotalValue}>{'$'+this.renderTotal(this.transactions, "Expense")}</Text>
+                    <Text style={styles.incomeTotalValue}>{'$'+this.renderTotal(this.props.screenProps, "Income")}</Text>
+                    <Text style={styles.expensesTotalValue}>{'$'+this.renderTotal(this.props.screenProps, "Expense")}</Text>
                 </View>
 
                 <ScrollView style={styles.transactionItemContainer}>
 
                     <View>
                         {
-                            this.transactions.map((transaction, index) => (
+                            this.props.screenProps.map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>

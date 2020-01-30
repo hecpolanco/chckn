@@ -6,7 +6,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 Icon.loadFont()
 
 import Home from './components/Home';
-import AddTransaction from './components/AddTransaction';
+import Transaction from './components/Transaction';
+import CreateTransaction from './components/CreateTransaction';
 import UpdateAccount from './components/UpdateAccount';
 import ExportData from './components/ExportData';
 import About from './components/About';
@@ -15,8 +16,9 @@ const HomeNav = createStackNavigator({
     Home: { screen: Home }
 })
 
-const CashFlowNav = createStackNavigator({
-    AddTransaction: { screen: AddTransaction }
+const TransactionsNav = createStackNavigator({
+    Transaction: { screen: Transaction },
+    CreateTransaction: { screen: CreateTransaction }
 })
 
 const ProfileNav = createStackNavigator({
@@ -35,8 +37,8 @@ const BottomNav = createBottomTabNavigator({
             )
         } 
     },
-    CashFlow: { 
-        screen: AddTransaction, 
+    Transactions: { 
+        screen: TransactionsNav, 
         navigationOptions: {
             tabBarLabel:'Transactions',
             tabBarIcon: ({ tintColor }) => (
