@@ -42,9 +42,16 @@ class App extends React.Component {
         this.setState({ transactionData }, () => console.log(this.state.transactionData))
       })
   }
+
+  updateTransactionData = (newTransactionObj) => {
+    this.setState({
+      transactionData: [...this.state.transactionData, newTransactionObj]
+    })
+  }
+
   render() {
     return (
-      <AppContainer screenProps={this.state.transactionData} />
+      <AppContainer screenProps={{transactionData: this.state.transactionData, updateTransactionData: this.updateTransactionData}} />
     )
   }
 }
