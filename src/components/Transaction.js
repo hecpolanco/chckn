@@ -9,7 +9,7 @@ import {
     StyleSheet
 } from 'react-native'
 
-export default class AddTransaction extends React.Component {
+export default class Transaction extends React.Component {
 
     transactions = [
         {id: 1, account_id: 1, batch_id: 1, date: "2020-01-15 00:00:00", flowtype: "Income", name: "Paycheck", amount: 1000, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
@@ -24,7 +24,7 @@ export default class AddTransaction extends React.Component {
         {id: 2, account_id: 1, batch_id: 1, date: "2020-01-27 00:00:00", flowtype: "Expense", name: "Bar", amount: 34.73, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"}
     ]
 
-    renderTotal = (objectArray, flowtype) => objectArray.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => { return acc + val }, 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    renderTotal = (objectArray, flowtype) => objectArray.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
 
     renderDayNumber = (datetime) => {
         const day = new Date(datetime);
@@ -71,25 +71,28 @@ export default class AddTransaction extends React.Component {
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
                     <Text style={styles.expensesSubHeader}>Expenses</Text>
-                    <TouchableOpacity style={styles.addTransactionsButton}>
+                    <TouchableOpacity 
+                        style={styles.addTransactionsButton} 
+                        onPress={() => {this.props.navigation.navigate('CreateTransaction')}}
+                    >
                         <Text style={styles.transactionButtonText}>+</Text>
                     </TouchableOpacity>
-                    <Text style={styles.incomeTotalValue}>{'$'+this.renderTotal(this.transactions, "Income")}</Text>
-                    <Text style={styles.expensesTotalValue}>{'$'+this.renderTotal(this.transactions, "Expense")}</Text>
+                    <Text style={styles.incomeTotalValue}>{'$'+parseFloat(this.renderTotal(this.props.screenProps.transactionData, "Income")/100).toFixed(2)}</Text>
+                    <Text style={styles.expensesTotalValue}>{'$'+parseFloat(this.renderTotal(this.props.screenProps.transactionData, "Expense")/100).toFixed(2)}</Text>
                 </View>
 
                 <ScrollView style={styles.transactionItemContainer}>
 
                     <View>
                         {
-                            this.transactions.map((transaction, index) => (
+                            this.props.screenProps.transactionData.map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
                                         <Text style={styles.transactionItemDateNumber}>{this.renderDayNumber(transaction.date)}</Text>
                                             <Text style={styles.transactionItemDateName}>{this.renderDayName(transaction.date)}</Text>
                                             <Text style={styles.transactionItemName}>{transaction.name}</Text>
-                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{'$'+(transaction.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</Text>: <Text style={styles.transactionExpenseItem}>{'-$'+(transaction.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</Text>}
+                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{'$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>: <Text style={styles.transactionExpenseItem}>{'-$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>}
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
@@ -104,7 +107,7 @@ export default class AddTransaction extends React.Component {
 
 const styles = StyleSheet.create({
     headerContainer: {
-        top: 50,
+        top: 0,
         margin: 20
     },
     transactionsHeader: {
@@ -117,7 +120,7 @@ const styles = StyleSheet.create({
         marginLeft: 222
     },
     subHeaderContainer: {
-        top: 15
+        top: -20
     },
     incomeSubHeader: {
         marginLeft: 20,
@@ -156,7 +159,7 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     transactionItemContainer: {
-        top: -19,
+        top: -59,
     },
     transactionItem: {
         marginLeft: 20,
