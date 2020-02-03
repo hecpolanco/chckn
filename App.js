@@ -32,15 +32,29 @@ const AppContainer = createAppContainer(BottomNav);
 
 class App extends React.Component {
   state = {
-    transactionData: []
+    transactionData: [],
+    totals: [],
+    income: '',
+    expense: '',
+    futureTransactions: []
   }
 
-  async componentDidMount() {
-    await fetch('http://localhost:3000/cashflows')
-      .then(res => res.json())
-      .then(transactionData => {
-        this.setState({ transactionData }, () => console.log(this.state.transactionData))
-      })
+  renderTotal = (flowtype) => this.state.transactionData.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
+
+  componentDidMount() {
+    fetch('http://localhost:3000/cashflows')
+    .then(res => res.json())
+    .then(transactionData => {
+      this.setState({ transactionData }, () => this.computeTotals())
+    })
+  }
+  
+  computeTotals = () => {
+    this.setState({
+      totals: [(((this.renderTotal("Income")-this.renderTotal("Expense"))/this.renderTotal("Income"))), ((this.renderTotal("Expense")/this.renderTotal("Income")))],
+      income: this.renderTotal("Income"),
+      expense: this.renderTotal("Expense"),
+      }, () => (this.futureTransactions(), console.log('test: ', this.state.totals, this.state.income, this.state.expense)))
   }
 
   updateTransactionData = (newTransactionObj) => {
@@ -49,9 +63,26 @@ class App extends React.Component {
     })
   }
 
+  futureTransactions = () => {
+    const today = new Date();
+    const endMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
+    console.log(this.state.transactionData, today, endMonth)
+    this.setState({
+      futureTransactions: this.state.transactionData.filter(transaction => new Date(transaction.date) >= today && new Date(transaction.date) <= endMonth)
+    }, () => console.log('futureTransactions: ', this.state.futureTransactions))
+  }
+
   render() {
     return (
-      <AppContainer screenProps={{transactionData: this.state.transactionData, updateTransactionData: this.updateTransactionData}} />
+      <AppContainer screenProps={{
+        transactionData: this.state.transactionData, 
+        updateTransactionData: this.updateTransactionData,
+        computeTotals: this.computeTotals,
+        totals: this.state.totals,
+        income: this.state.income,
+        expense: this.state.expense,
+        futureTransactions: this.state.futureTransactions
+      }} />
     )
   }
 }

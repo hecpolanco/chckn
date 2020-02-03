@@ -70,23 +70,16 @@ export default class CreateTransaction extends React.Component {
             .then(res => res.json())
             .then(newTransactionObj => (
                 this.props.screenProps.updateTransactionData(newTransactionObj),
-                this.props.navigation.navigate('Transaction')
+                this.props.navigation.navigate('Transaction'),
+                fetch('http://localhost:3000/cashflows')
+                .then(res => res.json())
+                .then(transactionData => {
+                this.setState({ transactionData }, () => this.props.screenProps.computeTotals())
+                })
             ))
         }
 
     }
-
-    // {
-    //     id: 1, 
-    //     account_id: 1, 
-    //     batch_id: 1, 
-    //     date: "2020-01-15 00:00:00", 
-    //     flowtype: "Income", 
-    //     name: "Paycheck", 
-    //     amount: 1000, 
-    //     created_at: "2020-01-28 18:58:36", 
-    //     updated_at: "2020-01-28 18:58:36"
-    // }
 
     render() {
         return(

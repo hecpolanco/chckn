@@ -3,6 +3,8 @@ import React from 'react'
 import {
     View,
     Text,
+    ScrollView,
+    TouchableWithoutFeedback,
     StyleSheet,
     TouchableOpacity
 } from 'react-native'
@@ -11,23 +13,47 @@ import * as d3 from 'd3'
 import { ART } from 'react-native'
 
 export default class Home extends React.Component {
-    state = {
-        totals: []
+
+    renderDayNumber = (datetime) => {
+        const day = new Date(datetime);
+        return day.getDate()+1
     }
 
-    renderTotal = (flowtype) => this.props.screenProps.transactionData.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
-
-    componentDidMount() {
-        this.setState({
-            totals: [this.renderTotal("Income"), this.renderTotal("Expense")]
-        })
+    renderDayName = (datetime) => {
+        let day = new Date(datetime).getDay();
+        switch (day) {
+            case (0):
+                return "SUN"
+                break;
+            case (1):
+                return "MON"
+                break;
+            case (2):
+                return "TUE"
+                break;
+            case (3):
+                return "WED"
+                break;
+            case (4):
+                return "THU"
+                break;
+            case (5):
+                return "FRI"
+                break;
+            case (6):
+                return "SAT"
+                break;
+            default:
+                return "NaN"
+                break;
+        }
     }
 
     render() {
         const { Surface, Group, Shape } = ART
-        const sectionAngles = d3.pie()(this.state.totals)
+        const sectionAngles = d3.pie()(this.props.screenProps.totals)
         const path = d3.arc().outerRadius(100).innerRadius(80)
-        const colors = d3.scaleLinear().domain([0, this.state.totals.length]).range([255, 0])
+        const colors = d3.scaleLinear().domain([this.props.screenProps.totals.length,0]).range([100, 255])
 
         return(
             <View>
@@ -44,8 +70,8 @@ export default class Home extends React.Component {
                     >
                         <Text style={styles.transactionButtonText}>+</Text>
                     </TouchableOpacity>
-                    <Text style={styles.incomeTotalValue}>{'$'+parseFloat(this.state.totals[0]/100).toFixed(2)}</Text>
-                    <Text style={styles.expensesTotalValue}>{'$'+parseFloat(this.state.totals[1]/100).toFixed(2)}</Text>
+                    <Text style={styles.incomeTotalValue}>{'$'+parseFloat(this.props.screenProps.income/100).toFixed(2)}</Text>
+                    <Text style={styles.expensesTotalValue}>{'$'+parseFloat(this.props.screenProps.expense/100).toFixed(2)}</Text>
                 </View>
 
 
@@ -57,17 +83,38 @@ export default class Home extends React.Component {
                             <Shape
                             key={section.index}
                             d={path(section)}
-                            fill={`rgb(101,88,245,${colors(section.index)/200})`}
+                            fill={`rgb(101,88,245,${colors(section.index)/250})`}
                             />
                         ))
                         }  
                     </Group>
                 </Surface>
-                <Text style={styles.availableAmount}>{'$'+parseFloat((this.state.totals[0]/100)-(this.state.totals[1]/100)).toFixed(2)}</Text>
+                <Text style={styles.availableAmount}>{'$'+parseFloat((this.props.screenProps.income-this.props.screenProps.expense)/100).toFixed(2)}</Text>
                 <Text style={styles.available}>Available</Text>
                 <View style={styles.spendAllowanceContainer}>
                     <Text style={styles.spendAllowance}>Spend Allowance</Text>
-                    <Text style={styles.spendAllowanceAmount}>${parseFloat((this.state.totals[0]-this.state.totals[1])/100).toFixed(2)} per day</Text>
+                    <Text style={styles.spendAllowanceAmount}>${parseFloat((this.props.screenProps.income-this.props.screenProps.expense)/100).toFixed(2)} per day</Text>
+                </View>
+                <View>
+                    <Text>Future Transactions</Text>
+                    <ScrollView style={styles.transactionItemContainer}>
+                    <View>
+                        {
+                            this.props.screenProps.futureTransactions.map((transaction, index) => (
+                                <View key={index}>
+                                    <TouchableWithoutFeedback>
+                                        <View style={styles.transactionItem}>
+                                        <Text style={styles.transactionItemDateNumber}>{this.renderDayNumber(transaction.date)}</Text>
+                                            <Text style={styles.transactionItemDateName}>{this.renderDayName(transaction.date)}</Text>
+                                            <Text style={styles.transactionItemName}>{transaction.name}</Text>
+                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{'$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>: <Text style={styles.transactionExpenseItem}>{'-$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>}
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                </View>
+                            ))
+                        }
+                    </View>
+                </ScrollView>
                 </View>
                 </View>
             </View>
@@ -126,7 +173,7 @@ const styles = StyleSheet.create({
     },
     expensesTotalValue: {
         top: -89,
-        marginLeft: 275,
+        right: -280,
         fontSize: 30
     },
     chartContainer: {
