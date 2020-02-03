@@ -11,19 +11,6 @@ import {
 
 export default class Transaction extends React.Component {
 
-    transactions = [
-        {id: 1, account_id: 1, batch_id: 1, date: "2020-01-15 00:00:00", flowtype: "Income", name: "Paycheck", amount: 1000, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-17 00:00:00", flowtype: "Expense", name: "Cellphone", amount: 100, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-19 00:00:00", flowtype: "Expense", name: "Sushi", amount: 99.73, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-23 00:00:00", flowtype: "Expense", name: "Car Insurance", amount: 63.54, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-28 00:00:00", flowtype: "Expense", name: "Hotel", amount: 137.58, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-24 00:00:00", flowtype: "Expense", name: "Bus", amount: 2.75, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-25 00:00:00", flowtype: "Expense", name: "Uber", amount: 19.25, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-26 00:00:00", flowtype: "Expense", name: "Lunch", amount: 9.75, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-29 00:00:00", flowtype: "Expense", name: "Macy's", amount: 198.48, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"},
-        {id: 2, account_id: 1, batch_id: 1, date: "2020-01-27 00:00:00", flowtype: "Expense", name: "Bar", amount: 34.73, created_at: "2020-01-28 18:58:36", updated_at: "2020-01-28 18:58:36"}
-    ]
-
     renderTotal = (objectArray, flowtype) => objectArray.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
 
     renderDayNumber = (datetime) => {
