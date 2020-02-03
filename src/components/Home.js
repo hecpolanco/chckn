@@ -95,8 +95,8 @@ export default class Home extends React.Component {
                     <Text style={styles.spendAllowance}>Spend Allowance</Text>
                     <Text style={styles.spendAllowanceAmount}>${parseFloat((this.props.screenProps.income-this.props.screenProps.expense)/100).toFixed(2)} per day</Text>
                 </View>
-                <View>
-                    <Text>Future Transactions</Text>
+                <View style={styles.futureTransactionsContainer}>
+                    <Text style={styles.futureTransactionsText}>Future Transactions</Text>
                     <ScrollView style={styles.transactionItemContainer}>
                     <View>
                         {
@@ -193,7 +193,8 @@ const styles = StyleSheet.create({
     },
     spendAllowanceContainer: {
         top: -160,
-        alignItems: 'center'
+        alignItems: 'center',
+        borderBottomWidth: 1
     },
     spendAllowance: {
         fontSize: 20,
@@ -201,10 +202,51 @@ const styles = StyleSheet.create({
     },
     spendAllowanceAmount: {
         margin: 5,
+        marginBottom: 30,
+        marginLeft: 177,
+        alignItems: 'center',
         fontSize: 25,
         fontWeight: 'bold',
         color: '#6558F5',
+        width: 375
+    },
+    futureTransactionsContainer: {
+        alignItems: 'center',
+        top: -57
+    },
+    futureTransactionsText: {
+        top: -70,
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    transactionItemContainer: {
+        top: -59,
+    },
+    transactionItem: {
+        marginLeft: 20,
+        marginRight: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#000'
+    },
+    transactionItemDateNumber: {
+        top: 17,
+    },
+    transactionItemDateName: {
+        top: 17,
+    },
+    transactionItemName: {
+        top: -10,
+        marginLeft: 87,
+        fontWeight: 'bold'
+    },
+    transactionIncomeItem: {
+        top: -27,
+        marginLeft: 303,
+        fontWeight: 'bold',
+        color: 'green'
+    },
+    transactionExpenseItem: {
+        top: -27,
+        marginLeft: 308,
+        fontWeight: 'bold'
     }
 })

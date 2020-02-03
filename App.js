@@ -51,7 +51,7 @@ class App extends React.Component {
   
   computeTotals = () => {
     this.setState({
-      totals: [(((this.renderTotal("Income")-this.renderTotal("Expense"))/this.renderTotal("Income"))), ((this.renderTotal("Expense")/this.renderTotal("Income")))],
+      totals: [((this.renderTotal("Income")-this.renderTotal("Expense"))/this.renderTotal("Income")), (this.renderTotal("Expense")/this.renderTotal("Income"))],
       income: this.renderTotal("Income"),
       expense: this.renderTotal("Expense"),
       }, () => (this.futureTransactions(), console.log('test: ', this.state.totals, this.state.income, this.state.expense)))
