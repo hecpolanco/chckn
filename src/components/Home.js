@@ -18,9 +18,9 @@ export default class Home extends React.Component {
         const { balance, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions } = this.props.screenProps
         const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
-        const sectionAngles = d3.pie().sort(null)
-        .startAngle(-2*Math.PI)
-        .endAngle(-5*Math.PI)(totals)
+        const sectionAngles = d3.pie()
+            .startAngle(-2*Math.PI)
+            .endAngle(-5*Math.PI)(totals)
         const path = d3.arc().outerRadius(100).innerRadius(80)
         const colors = d3.scaleLinear().domain([0, totals.length]).range([100, 255])
 

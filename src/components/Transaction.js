@@ -38,7 +38,7 @@ export default class Transaction extends React.Component {
 
                     <View style={styles.transactionMargin}>
                         {   
-                            this.props.screenProps.transactionData.filter(transaction => new Date(transaction.date) >= this.props.screenProps.today && new Date(transaction.date) <= this.props.screenProps.endMonth).map((transaction, index) => (
+                            this.props.screenProps.transactionData.sort((t1, t2) => t1.date > t2.date).filter(transaction => new Date(transaction.date) >= this.props.screenProps.today && new Date(transaction.date) <= this.props.screenProps.endMonth).map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>

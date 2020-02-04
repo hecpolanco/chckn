@@ -62,12 +62,16 @@ export default class App extends React.Component {
 
   futureTransactions = () => {
     const today = new Date();
+    formatToday = today.setDate(today.getDate() - 1);
     const endMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
+    formatEndMonth = endMonth.setDate(endMonth.getDate() + 1);
     console.log(this.state.transactionData, today, endMonth)
     this.setState({
       today: today,
       endMonth: endMonth,
-      futureTransactions: this.state.transactionData.filter(transaction => new Date(transaction.date) >= today - 1 && new Date(transaction.date) <= endMonth)
+      futureTransactions: this.state.transactionData
+        .sort((t1, t2) => t1.date > t2.date)
+        .filter(transaction => Date.parse(transaction.date) >= formatToday && Date.parse(transaction.date) <= formatEndMonth)
     }, () => console.log('futureTransactions: ', this.state.futureTransactions))
   }
 
