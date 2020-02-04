@@ -40,12 +40,16 @@ export default class App extends React.Component {
       expense: this.renderTotal("Expense"),
       daysLeft: this.daysLeft(),
       balance: this.renderTotal("Income")-this.renderTotal("Expense"),
-      }, () => (this.futureTransactions(), console.log('test: ', this.state.totals, this.state.income, this.state.expense)))
+      }, 
+      () => this.futureTransactions()
+    )
   }
 
-  updateTransactionData = (newTransactionObj) => {
-    this.setState({
-      transactionData: [...this.state.transactionData, newTransactionObj]
+  updateTransactionData = () => {
+    fetch('http://localhost:3000/cashflows')
+    .then(res => res.json())
+    .then(transactionData => {
+      this.setState({ transactionData }, () => this.computeTotals())
     })
   }
 

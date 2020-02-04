@@ -36,7 +36,7 @@ export default class Transaction extends React.Component {
 
                 <ScrollView style={styles.transactionItemContainer}>
 
-                    <View>
+                    <View style={styles.transactionMargin}>
                         {   
                             this.props.screenProps.transactionData.filter(transaction => new Date(transaction.date) >= this.props.screenProps.today && new Date(transaction.date) <= this.props.screenProps.endMonth).map((transaction, index) => (
                                 <View key={index}>
@@ -117,7 +117,10 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     transactionItemContainer: {
-        top: -59,
+        top: -66,
+    },
+    transactionMargin: {
+        marginBottom: 170
     },
     transactionItem: {
         marginLeft: 20,

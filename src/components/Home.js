@@ -18,7 +18,9 @@ export default class Home extends React.Component {
         const { balance, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions } = this.props.screenProps
         const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
-        const sectionAngles = d3.pie()(totals)
+        const sectionAngles = d3.pie().sort(null)
+        .startAngle(-2*Math.PI)
+        .endAngle(-5*Math.PI)(totals)
         const path = d3.arc().outerRadius(100).innerRadius(80)
         const colors = d3.scaleLinear().domain([0, totals.length]).range([100, 255])
 
@@ -39,21 +41,13 @@ export default class Home extends React.Component {
                 <Surface width={500} height={500}>
                     <Group x={500/2} y={500/2}>
                         {
-                        sectionAngles.map(section => {
-                            if (balance < 0 ) {
-                                return <Shape
-                                            key={section.index}
-                                            d={path(section)} 
-                                            fill={`rgb(101,88,245,${colors(section.index)/250})`}
-                                        /> 
-                            } else {
-                                return <Shape
-                                    key={section.index}
-                                    d={path(section)}
-                                    fill={`rgb(0,128,0,${colors(section.index)/250})`}
-                                />
-                            }
-                        })
+                        sectionAngles.map(section => (
+                            <Shape
+                                key={section.index}
+                                d={path(section)}
+                                fill={`rgb(101,88,245,${colors(section.index)/250})`}
+                            />
+                        ))
                         }  
                     </Group>
                 </Surface>
@@ -168,7 +162,7 @@ const styles = StyleSheet.create({
     },
     availableAmountNegative: {
         top: -275,
-        color: '#6558F5',
+        color: 'red',
         fontSize: 25,
         fontWeight: 'bold'
     },
@@ -203,11 +197,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 25,
         fontWeight: 'bold',
-        color: '#6558F5',
+        color: 'red',
         width: 375
     },
     newTransaction: {
-        top: 30,
+        top: 44,
         alignItems: 'center',
         fontSize: 17,
         fontWeight: 'bold',
