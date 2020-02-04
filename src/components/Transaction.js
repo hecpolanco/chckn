@@ -61,7 +61,11 @@ export default class Transaction extends React.Component {
 const styles = StyleSheet.create({
     headerContainer: {
         top: 0,
-        margin: 20
+        left: -6,
+        marginBottom: 40,
+        margin: 20,
+        width: 385,
+        borderBottomWidth: 1
     },
     transactionsHeader: {
         fontSize: 25,
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
     },
     addTransactionsButton: {
         top: -33,
-        marginLeft: 340,
+        marginLeft: 344,
         height: 40,
         width: 50,
         backgroundColor: '#6558F5',
@@ -105,12 +109,12 @@ const styles = StyleSheet.create({
     incomeTotalValue: {
         top: -53,
         marginLeft: 20,
-        fontSize: 15
+        fontSize: 18
     },
     expensesTotalValue: {
-        top: -71,
+        top: -74,
         marginLeft: 153,
-        fontSize: 15
+        fontSize: 18
     },
     transactionItemContainer: {
         top: -59,
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
     },
     transactionExpenseItem: {
         top: -27,
-        marginLeft: 307,
+        marginLeft: 300,
         fontWeight: 'bold',
         textAlign: 'right',
         color: '#6558F5'

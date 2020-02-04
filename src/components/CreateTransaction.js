@@ -69,12 +69,11 @@ export default class CreateTransaction extends React.Component {
             })
             .then(res => res.json())
             .then(newTransactionObj => (
-                this.props.screenProps.updateTransactionData(newTransactionObj),
                 this.props.navigation.navigate('Transaction'),
                 fetch('http://localhost:3000/cashflows')
                 .then(res => res.json())
                 .then(transactionData => {
-                this.setState({ transactionData }, () => this.props.screenProps.computeTotals())
+                this.setState({ transactionData }, () => (this.props.screenProps.computeTotals(), this.props.screenProps.updateTransactionData(newTransactionObj)))
                 })
             ))
         }

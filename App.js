@@ -13,6 +13,7 @@ export default class App extends React.Component {
     income: '',
     expense: '',
     daysLeft: '',
+    balance: ''
   }
 
   renderTotal = (flowtype) => this.state.transactionData
@@ -38,6 +39,7 @@ export default class App extends React.Component {
       income: this.renderTotal("Income"),
       expense: this.renderTotal("Expense"),
       daysLeft: this.daysLeft(),
+      balance: this.renderTotal("Income")-this.renderTotal("Expense"),
       }, () => (this.futureTransactions(), console.log('test: ', this.state.totals, this.state.income, this.state.expense)))
   }
 
@@ -115,7 +117,8 @@ export default class App extends React.Component {
         endMonth: this.state.endMonth,
         renderDollars: this.renderDollars,
         renderDayNumber: this.renderDayNumber,
-        renderDayName: this.renderDayName
+        renderDayName: this.renderDayName,
+        balance: this.state.balance
       }} />
     )
   }

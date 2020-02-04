@@ -15,7 +15,7 @@ import { ART } from 'react-native'
 export default class Home extends React.Component {
 
     render() {
-        const { income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions } = this.props.screenProps
+        const { balance, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions } = this.props.screenProps
         const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
         const sectionAngles = d3.pie()(totals)
@@ -39,21 +39,29 @@ export default class Home extends React.Component {
                 <Surface width={500} height={500}>
                     <Group x={500/2} y={500/2}>
                         {
-                        sectionAngles.map(section => (
-                            <Shape
-                            key={section.index}
-                            d={path(section)}
-                            fill={`rgb(101,88,245,${colors(section.index)/250})`}
-                            />
-                        ))
+                        sectionAngles.map(section => {
+                            if (balance < 0 ) {
+                                return <Shape
+                                            key={section.index}
+                                            d={path(section)} 
+                                            fill={`rgb(101,88,245,${colors(section.index)/250})`}
+                                        /> 
+                            } else {
+                                return <Shape
+                                    key={section.index}
+                                    d={path(section)}
+                                    fill={`rgb(0,128,0,${colors(section.index)/250})`}
+                                />
+                            }
+                        })
                         }  
                     </Group>
                 </Surface>
-                <Text style={styles.availableAmount}>{renderDollars(income-expense)}</Text>
+                {income-expense < 0 ? <Text style={styles.availableAmountNegative}>{renderDollars(balance)}</Text> : <Text style={styles.availableAmount}>{renderDollars(balance)}</Text>}
                 <Text style={styles.available}>Available</Text>
                 <View style={styles.spendAllowanceContainer}>
                     <Text style={styles.spendAllowance}>Spend Allowance</Text>
-                    <Text style={styles.spendAllowanceAmount}>{renderDollars((income-expense)/daysLeft)} per day</Text>
+                    {balance < 0 ? <Text style={styles.spendAllowanceAmountNegative}>{renderDollars((balance)/daysLeft)} per day</Text> : <Text style={styles.spendAllowanceAmount}>{renderDollars((balance)/daysLeft)} per day</Text>}
                 </View>
                 <View style={styles.futureTransactionsContainer}>
                     <Text style={styles.futureTransactionsText}>Future Transactions</Text>
@@ -64,7 +72,7 @@ export default class Home extends React.Component {
                         <Text style={styles.transactionButtonText}>+</Text>
                     </TouchableOpacity>
                     <ScrollView style={styles.transactionItemContainer}>
-                    <View style={{marginBottom: 2038}}>
+                    <View style={styles.transactionMargin}>
                         {
                             futureTransactions.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
                             futureTransactions.map((transaction, index) => (
@@ -92,11 +100,15 @@ export default class Home extends React.Component {
 const styles = StyleSheet.create({
     headerContainer: {
         top: 0,
-        margin: 20
+        left: -6,
+        marginBottom: 40,
+        margin: 20,
+        width: 385,
+        borderBottomWidth: 1
     },
     transactionsHeader: {
         fontSize: 25,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     dateHeader: {
         fontSize: 25,
@@ -119,8 +131,8 @@ const styles = StyleSheet.create({
         marginLeft: 300
     },
     transactionsButton: {
-        top: -93,
-        marginLeft: 345,
+        top: -92,
+        marginLeft: 343,
         height: 25,
         width: 30,
         backgroundColor: '#6558F5',
@@ -145,10 +157,16 @@ const styles = StyleSheet.create({
         fontSize: 30
     },
     chartContainer: {
-        top: -180,
+        top: -190,
         alignItems: 'center'
     },
     availableAmount: {
+        top: -275,
+        color: '#008000',
+        fontSize: 25,
+        fontWeight: 'bold'
+    },
+    availableAmountNegative: {
         top: -275,
         color: '#6558F5',
         fontSize: 25,
@@ -160,7 +178,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     spendAllowanceContainer: {
-        top: -160,
+        top: -165,
         alignItems: 'center',
         borderBottomWidth: 1
     },
@@ -169,6 +187,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     spendAllowanceAmount: {
+        margin: 5,
+        marginBottom: 30,
+        alignItems: 'center',
+        textAlign: 'center',
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: '#008000',
+        width: 375
+    },
+    spendAllowanceAmountNegative: {
         margin: 5,
         marginBottom: 30,
         alignItems: 'center',
@@ -187,7 +215,7 @@ const styles = StyleSheet.create({
     },
     futureTransactionsContainer: {
         alignItems: 'center',
-        top: -62
+        top: -73
     },
     futureTransactionsText: {
         top: -68,
@@ -197,6 +225,9 @@ const styles = StyleSheet.create({
     },
     transactionItemContainer: {
         top: -79
+    },
+    transactionMargin: {
+        marginBottom: 2060
     },
     transactionItem: {
         marginLeft: 20,
@@ -228,7 +259,7 @@ const styles = StyleSheet.create({
     },
     transactionExpenseItem: {
         top: -27,
-        marginLeft: 307,
+        marginLeft: 300,
         fontWeight: 'bold',
         textAlign: 'right',
         color: '#6558F5'
