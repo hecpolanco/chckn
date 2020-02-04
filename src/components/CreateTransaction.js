@@ -78,7 +78,6 @@ export default class CreateTransaction extends React.Component {
                 })
             ))
         }
-
     }
 
     render() {

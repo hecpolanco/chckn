@@ -1,45 +1,24 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
 import { createAppContainer } from 'react-navigation';
 import BottomNav from './src/index';
 
 const AppContainer = createAppContainer(BottomNav);
 
-
-class App extends React.Component {
+export default class App extends React.Component {
   state = {
     transactionData: [],
     totals: [],
     income: '',
     expense: '',
+    daysLeft: '',
     futureTransactions: []
   }
 
   renderTotal = (flowtype) => this.state.transactionData.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
+
+  renderDollars = (amount) => {
+    return '$' + parseFloat(amount/100).toFixed(2)
+  }
 
   componentDidMount() {
     fetch('http://localhost:3000/cashflows')
@@ -54,6 +33,7 @@ class App extends React.Component {
       totals: [((this.renderTotal("Income")-this.renderTotal("Expense"))/this.renderTotal("Income")), (this.renderTotal("Expense")/this.renderTotal("Income"))],
       income: this.renderTotal("Income"),
       expense: this.renderTotal("Expense"),
+      daysLeft: this.daysLeft(),
       }, () => (this.futureTransactions(), console.log('test: ', this.state.totals, this.state.income, this.state.expense)))
   }
 
@@ -63,13 +43,57 @@ class App extends React.Component {
     })
   }
 
+  daysLeft = () => {
+    today=new Date();
+    endMonth=new Date(today.getFullYear(), today.getMonth()+1, 0);
+    oneDay=1000*60*60*24;
+    return Math.ceil((endMonth.getTime()-today.getTime())/(oneDay));
+  }
+
   futureTransactions = () => {
     const today = new Date();
     const endMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
     console.log(this.state.transactionData, today, endMonth)
     this.setState({
-      futureTransactions: this.state.transactionData.filter(transaction => new Date(transaction.date) >= today && new Date(transaction.date) <= endMonth)
+      today: today,
+      endMonth: endMonth,
+      futureTransactions: this.state.transactionData.filter(transaction => new Date(transaction.date) >= today - 1 && new Date(transaction.date) <= endMonth)
     }, () => console.log('futureTransactions: ', this.state.futureTransactions))
+  }
+
+  renderDayNumber = (datetime) => {
+    const day = new Date(datetime);
+    return day.getDate();
+  }
+
+  renderDayName = (datetime) => {
+    let day = new Date(datetime).getDay();
+    switch (day) {
+        case (0):
+            return "SUN"
+            break;
+        case (1):
+            return "MON"
+            break;
+        case (2):
+            return "TUE"
+            break;
+        case (3):
+            return "WED"
+            break;
+        case (4):
+            return "THU"
+            break;
+        case (5):
+            return "FRI"
+            break;
+        case (6):
+            return "SAT"
+            break;
+        default:
+            return "NaN"
+            break;
+    }
   }
 
   render() {
@@ -81,10 +105,14 @@ class App extends React.Component {
         totals: this.state.totals,
         income: this.state.income,
         expense: this.state.expense,
-        futureTransactions: this.state.futureTransactions
+        futureTransactions: this.state.futureTransactions,
+        daysLeft: this.state.daysLeft,
+        today: this.state.today,
+        endMonth: this.state.endMonth,
+        renderDollars: this.renderDollars,
+        renderDayNumber: this.renderDayNumber,
+        renderDayName: this.renderDayName
       }} />
     )
   }
 }
-
-export default App;

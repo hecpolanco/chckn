@@ -11,75 +11,41 @@ import {
 
 export default class Transaction extends React.Component {
 
-    renderTotal = (objectArray, flowtype) => objectArray.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
-
-    renderDayNumber = (datetime) => {
-        const day = new Date(datetime);
-        return day.getDate()+1
-    }
-
-    renderDayName = (datetime) => {
-        let day = new Date(datetime).getDay();
-        switch (day) {
-            case (0):
-                return "SUN"
-                break;
-            case (1):
-                return "MON"
-                break;
-            case (2):
-                return "TUE"
-                break;
-            case (3):
-                return "WED"
-                break;
-            case (4):
-                return "THU"
-                break;
-            case (5):
-                return "FRI"
-                break;
-            case (6):
-                return "SAT"
-                break;
-            default:
-                return "NaN"
-                break;
-        }
-    }
-
     render() {
+        const { income, expense, renderDollars, renderDayName, renderDayNumber } = this.props.screenProps
+        const { navigate } = this.props.navigation
+
         return(
             <View>
                 <View style={styles.headerContainer}>
                     <Text style={styles.transactionsHeader}>Transactions</Text>
-                    <Text style={styles.dateHeader}>January 2020</Text>
+                    <Text style={styles.dateHeader}>February 2020</Text>
                 </View>
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
                     <Text style={styles.expensesSubHeader}>Expenses</Text>
                     <TouchableOpacity 
                         style={styles.addTransactionsButton} 
-                        onPress={() => {this.props.navigation.navigate('CreateTransaction')}}
+                        onPress={() => {navigate('CreateTransaction')}}
                     >
                         <Text style={styles.transactionButtonText}>+</Text>
                     </TouchableOpacity>
-                    <Text style={styles.incomeTotalValue}>{'$'+parseFloat(this.renderTotal(this.props.screenProps.transactionData, "Income")/100).toFixed(2)}</Text>
-                    <Text style={styles.expensesTotalValue}>{'$'+parseFloat(this.renderTotal(this.props.screenProps.transactionData, "Expense")/100).toFixed(2)}</Text>
+                    <Text style={styles.incomeTotalValue}>{renderDollars(income)}</Text>
+                    <Text style={styles.expensesTotalValue}>{renderDollars(expense)}</Text>
                 </View>
 
                 <ScrollView style={styles.transactionItemContainer}>
 
                     <View>
-                        {
-                            this.props.screenProps.transactionData.map((transaction, index) => (
+                        {   
+                            this.props.screenProps.transactionData.filter(transaction => new Date(transaction.date) >= this.props.screenProps.today && new Date(transaction.date) <= this.props.screenProps.endMonth).map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
-                                        <Text style={styles.transactionItemDateNumber}>{this.renderDayNumber(transaction.date)}</Text>
-                                            <Text style={styles.transactionItemDateName}>{this.renderDayName(transaction.date)}</Text>
+                                        <Text style={styles.transactionItemDateNumber}>{renderDayNumber(transaction.date)}</Text>
+                                            <Text style={styles.transactionItemDateName}>{renderDayName(transaction.date)}</Text>
                                             <Text style={styles.transactionItemName}>{transaction.name}</Text>
-                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{'$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>: <Text style={styles.transactionExpenseItem}>{'-$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>}
+                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{renderDollars(transaction.amount)}</Text>: <Text style={styles.transactionExpenseItem}>{renderDollars(transaction.amount)}</Text>}
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
@@ -104,7 +70,8 @@ const styles = StyleSheet.create({
     dateHeader: {
         fontSize: 25,
         top: -29.5,
-        marginLeft: 222
+        marginLeft: 210,
+        textAlign: 'right'
     },
     subHeaderContainer: {
         top: -20
@@ -168,11 +135,14 @@ const styles = StyleSheet.create({
         top: -27,
         marginLeft: 303,
         fontWeight: 'bold',
+        textAlign: 'right',
         color: 'green'
     },
     transactionExpenseItem: {
         top: -27,
         marginLeft: 308,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textAlign: 'right',
+        color: '#6558F5'
     }
 })

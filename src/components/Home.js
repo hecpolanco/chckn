@@ -14,66 +14,32 @@ import { ART } from 'react-native'
 
 export default class Home extends React.Component {
 
-    renderDayNumber = (datetime) => {
-        const day = new Date(datetime);
-        return day.getDate()+1
-    }
-
-    renderDayName = (datetime) => {
-        let day = new Date(datetime).getDay();
-        switch (day) {
-            case (0):
-                return "SUN"
-                break;
-            case (1):
-                return "MON"
-                break;
-            case (2):
-                return "TUE"
-                break;
-            case (3):
-                return "WED"
-                break;
-            case (4):
-                return "THU"
-                break;
-            case (5):
-                return "FRI"
-                break;
-            case (6):
-                return "SAT"
-                break;
-            default:
-                return "NaN"
-                break;
-        }
-    }
-
     render() {
+        const { income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions } = this.props.screenProps
+        const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
-        const sectionAngles = d3.pie()(this.props.screenProps.totals)
+        const sectionAngles = d3.pie()(totals)
         const path = d3.arc().outerRadius(100).innerRadius(80)
-        const colors = d3.scaleLinear().domain([this.props.screenProps.totals.length,0]).range([100, 255])
+        const colors = d3.scaleLinear().domain([0, totals.length]).range([100, 255])
 
         return(
             <View>
                 <View style={styles.headerContainer}>
                     <Text style={styles.transactionsHeader}>Hi, Hector!</Text>
-                    <Text style={styles.dateHeader}>January 2020</Text>
+                    <Text style={styles.dateHeader}>February 2020</Text>
                 </View>
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
                     <Text style={styles.expensesSubHeader}>Expenses</Text>
                     <TouchableOpacity 
                         style={styles.addTransactionsButton} 
-                        onPress={() => {this.props.navigation.navigate('CreateTransaction')}}
+                        onPress={() => {navigate('CreateTransaction')}}
                     >
                         <Text style={styles.transactionButtonText}>+</Text>
                     </TouchableOpacity>
-                    <Text style={styles.incomeTotalValue}>{'$'+parseFloat(this.props.screenProps.income/100).toFixed(2)}</Text>
-                    <Text style={styles.expensesTotalValue}>{'$'+parseFloat(this.props.screenProps.expense/100).toFixed(2)}</Text>
+                    <Text style={styles.incomeTotalValue}>{renderDollars(income)}</Text>
+                    <Text style={styles.expensesTotalValue}>{renderDollars(expense)}</Text>
                 </View>
-
 
                 <View style={styles.chartContainer}>
                 <Surface width={500} height={500}>
@@ -89,25 +55,26 @@ export default class Home extends React.Component {
                         }  
                     </Group>
                 </Surface>
-                <Text style={styles.availableAmount}>{'$'+parseFloat((this.props.screenProps.income-this.props.screenProps.expense)/100).toFixed(2)}</Text>
+                <Text style={styles.availableAmount}>{renderDollars(income-expense)}</Text>
                 <Text style={styles.available}>Available</Text>
                 <View style={styles.spendAllowanceContainer}>
                     <Text style={styles.spendAllowance}>Spend Allowance</Text>
-                    <Text style={styles.spendAllowanceAmount}>${parseFloat((this.props.screenProps.income-this.props.screenProps.expense)/100).toFixed(2)} per day</Text>
+                    <Text style={styles.spendAllowanceAmount}>{renderDollars((income-expense)/daysLeft)} per day</Text>
                 </View>
                 <View style={styles.futureTransactionsContainer}>
                     <Text style={styles.futureTransactionsText}>Future Transactions</Text>
                     <ScrollView style={styles.transactionItemContainer}>
                     <View>
                         {
-                            this.props.screenProps.futureTransactions.map((transaction, index) => (
+                            futureTransactions.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
+                            futureTransactions.map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
-                                        <Text style={styles.transactionItemDateNumber}>{this.renderDayNumber(transaction.date)}</Text>
-                                            <Text style={styles.transactionItemDateName}>{this.renderDayName(transaction.date)}</Text>
+                                        <Text style={styles.transactionItemDateNumber}>{renderDayNumber(transaction.date)}</Text>
+                                            <Text style={styles.transactionItemDateName}>{renderDayName(transaction.date)}</Text>
                                             <Text style={styles.transactionItemName}>{transaction.name}</Text>
-                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{'$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>: <Text style={styles.transactionExpenseItem}>{'-$'+parseFloat(transaction.amount/100).toFixed(2)}</Text>}
+                                            {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{renderDollars(transaction.amount)}</Text>: <Text style={styles.transactionExpenseItem}>{renderDollars(transaction.amount)}</Text>}
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
@@ -134,7 +101,8 @@ const styles = StyleSheet.create({
     dateHeader: {
         fontSize: 25,
         top: -29.5,
-        marginLeft: 222
+        marginLeft: 210,
+        textAlign: 'right'
     },
     subHeaderContainer: {
         top: -20
@@ -173,7 +141,8 @@ const styles = StyleSheet.create({
     },
     expensesTotalValue: {
         top: -89,
-        right: -280,
+        textAlign: 'right',
+        right: 21,
         fontSize: 30
     },
     chartContainer: {
@@ -203,12 +172,19 @@ const styles = StyleSheet.create({
     spendAllowanceAmount: {
         margin: 5,
         marginBottom: 30,
-        marginLeft: 177,
         alignItems: 'center',
+        textAlign: 'center',
         fontSize: 25,
         fontWeight: 'bold',
         color: '#6558F5',
         width: 375
+    },
+    newTransaction: {
+        top: 30,
+        alignItems: 'center',
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: '#6558F5'
     },
     futureTransactionsContainer: {
         alignItems: 'center',
@@ -225,7 +201,7 @@ const styles = StyleSheet.create({
     transactionItem: {
         marginLeft: 20,
         marginRight: 20,
-        borderBottomWidth: 1,
+        borderBottomWidth: 1
     },
     transactionItemDateNumber: {
         top: 17,
@@ -240,13 +216,15 @@ const styles = StyleSheet.create({
     },
     transactionIncomeItem: {
         top: -27,
-        marginLeft: 303,
+        textAlign: 'right',
         fontWeight: 'bold',
         color: 'green'
     },
     transactionExpenseItem: {
         top: -27,
         marginLeft: 308,
-        fontWeight: 'bold'
+        textAlign: 'right',
+        fontWeight: 'bold',
+        color: '#6558F5'
     }
 })
