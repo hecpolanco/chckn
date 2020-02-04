@@ -31,12 +31,6 @@ export default class Home extends React.Component {
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
                     <Text style={styles.expensesSubHeader}>Expenses</Text>
-                    <TouchableOpacity 
-                        style={styles.addTransactionsButton} 
-                        onPress={() => {navigate('CreateTransaction')}}
-                    >
-                        <Text style={styles.transactionButtonText}>+</Text>
-                    </TouchableOpacity>
                     <Text style={styles.incomeTotalValue}>{renderDollars(income)}</Text>
                     <Text style={styles.expensesTotalValue}>{renderDollars(expense)}</Text>
                 </View>
@@ -63,8 +57,14 @@ export default class Home extends React.Component {
                 </View>
                 <View style={styles.futureTransactionsContainer}>
                     <Text style={styles.futureTransactionsText}>Future Transactions</Text>
+                    <TouchableOpacity 
+                        style={styles.transactionsButton} 
+                        onPress={() => {navigate('CreateTransaction')}}
+                    >
+                        <Text style={styles.transactionButtonText}>+</Text>
+                    </TouchableOpacity>
                     <ScrollView style={styles.transactionItemContainer}>
-                    <View>
+                    <View style={{marginBottom: 2038}}>
                         {
                             futureTransactions.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
                             futureTransactions.map((transaction, index) => (
@@ -118,35 +118,34 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 300
     },
-    addTransactionsButton: {
-        top: -33,
-        marginLeft: 340,
-        height: 40,
-        width: 50,
+    transactionsButton: {
+        top: -93,
+        marginLeft: 345,
+        height: 25,
+        width: 30,
         backgroundColor: '#6558F5',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 3,
-        opacity: 0
+        borderRadius: 3
     },
     transactionButtonText: {
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'bold',
         color: '#fff'
     },
     incomeTotalValue: {
-        top: -53,
+        top: -15,
         marginLeft: 20,
         fontSize: 30
     },
     expensesTotalValue: {
-        top: -89,
+        top: -51,
         textAlign: 'right',
         right: 21,
         fontSize: 30
     },
     chartContainer: {
-        top: -220,
+        top: -180,
         alignItems: 'center'
     },
     availableAmount: {
@@ -188,20 +187,26 @@ const styles = StyleSheet.create({
     },
     futureTransactionsContainer: {
         alignItems: 'center',
-        top: -57
+        top: -62
     },
     futureTransactionsText: {
-        top: -70,
+        top: -68,
+        marginLeft: -185,
         fontSize: 20,
         fontWeight: 'bold'
     },
     transactionItemContainer: {
-        top: -59,
+        top: -79
     },
     transactionItem: {
         marginLeft: 20,
         marginRight: 20,
         borderBottomWidth: 1
+    },
+    transactionItem: {
+        marginLeft: 20,
+        marginRight: 20,
+        borderBottomWidth: 1,
     },
     transactionItemDateNumber: {
         top: 17,
@@ -216,15 +221,16 @@ const styles = StyleSheet.create({
     },
     transactionIncomeItem: {
         top: -27,
-        textAlign: 'right',
+        marginLeft: 303,
         fontWeight: 'bold',
+        textAlign: 'right',
         color: 'green'
     },
     transactionExpenseItem: {
         top: -27,
-        marginLeft: 308,
-        textAlign: 'right',
+        marginLeft: 307,
         fontWeight: 'bold',
+        textAlign: 'right',
         color: '#6558F5'
     }
 })

@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     },
     transactionExpenseItem: {
         top: -27,
-        marginLeft: 308,
+        marginLeft: 307,
         fontWeight: 'bold',
         textAlign: 'right',
         color: '#6558F5'

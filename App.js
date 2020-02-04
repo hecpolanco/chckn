@@ -7,14 +7,18 @@ const AppContainer = createAppContainer(BottomNav);
 export default class App extends React.Component {
   state = {
     transactionData: [],
+    selectedTransactions: [],
+    futureTransactions: [],
     totals: [],
     income: '',
     expense: '',
     daysLeft: '',
-    futureTransactions: []
   }
 
-  renderTotal = (flowtype) => this.state.transactionData.filter(object => object.flowtype === flowtype).map(object => object.amount).reduce((acc, val) => ( acc + val ), 0)
+  renderTotal = (flowtype) => this.state.transactionData
+    .filter(object => object.flowtype === flowtype)
+    .map(object => object.amount)
+    .reduce((acc, val) => ( acc + val ), 0)
 
   renderDollars = (amount) => {
     return '$' + parseFloat(amount/100).toFixed(2)
@@ -46,7 +50,7 @@ export default class App extends React.Component {
   daysLeft = () => {
     today=new Date();
     endMonth=new Date(today.getFullYear(), today.getMonth()+1, 0);
-    oneDay=1000*60*60*24;
+    oneDay=1000*60*60*24; //1000ms is 1second - 60seconds is 1minute - 60minutes is 1hour - 24hours is 1day 
     return Math.ceil((endMonth.getTime()-today.getTime())/(oneDay));
   }
 
