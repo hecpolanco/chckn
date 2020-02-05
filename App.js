@@ -13,7 +13,9 @@ export default class App extends React.Component {
     income: '',
     expense: '',
     daysLeft: '',
-    balance: ''
+    balance: '',
+    dropdown: [],
+    dropdownKeys: []
   }
 
   renderTotal = (flowtype) => this.state.transactionData
@@ -41,7 +43,7 @@ export default class App extends React.Component {
       daysLeft: this.daysLeft(),
       balance: this.renderTotal("Income")-this.renderTotal("Expense"),
       }, 
-      () => this.futureTransactions()
+      () => (this.futureTransactions(), this.findFirstLast("3-1-2020"))
     )
   }
 
@@ -108,6 +110,24 @@ export default class App extends React.Component {
             return "NaN"
             break;
     }
+  }
+
+  findFirstLast = (datetime) => {
+    formattedDate = new Date(datetime)
+    firstDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth(), 1)
+    lastDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth() + 1, 0)
+    const dates = this.state.transactionData.map(transaction => new Date(transaction.date))
+      .map(date => {
+        if (!this.state.dropdownKeys.find(date => date.getMonth() + ' ' + date.getFullYear())) { 
+          return date.getMonth()+1 + '-1-' + date.getFullYear() 
+        }
+      })
+    this.setState({
+      dropdownKeys: [...new Set (dates)],
+      dropdown: this.state.transactionData
+        .sort((t1, t2) => t1.date > t2.date)
+        .filter(transaction => Date.parse(transaction.date) >= firstDay && Date.parse(transaction.date) <= lastDay)
+    }, () => console.log('dropdown after fetch: ', this.state.dropdown, " keys:", this.state.dropdownKeys))  
   }
 
   render() {

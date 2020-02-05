@@ -234,10 +234,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     transactionItemDateNumber: {
-        top: 17,
+        top: 17
     },
     transactionItemDateName: {
-        top: 17,
+        top: 17
     },
     transactionItemName: {
         top: -10,
