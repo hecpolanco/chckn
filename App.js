@@ -16,13 +16,36 @@ export default class App extends React.Component {
     balance: '',
     dropdown: [],
     dropdownKeys: [],
-    selectedMonth: ''
+    selectedMonth: '2-1-2020'
   }
 
-  renderTotal = (flowtype) => this.state.transactionData
-    .filter(object => object.flowtype === flowtype)
-    .map(object => object.amount)
-    .reduce((acc, val) => ( acc + val ), 0)
+  renderTotal = (flowtype) => {
+    formattedDate = new Date(this.state.selectedMonth)
+    firstDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth(), 1)
+    lastDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth() + 1, 0)
+    const dates = this.state.transactionData.map(transaction => new Date(transaction.date))
+      .map(date => { return date.getMonth()+1 + '-1-' + date.getFullYear()
+      })
+    this.setState({
+      dropdownKeys: [...new Set (dates)],
+      dropdown: this.state.transactionData
+        .sort((t1, t2) => t1.date > t2.date)
+        .filter(transaction => Date.parse(transaction.date) >= firstDay && Date.parse(transaction.date) <= lastDay)
+    }, () => { 
+      if (flowtype === "Income") {
+        this.setState({ income: this.state.dropdown
+          .filter(object => object.flowtype === "Income")
+          .map(object => object.amount)
+          .reduce((acc, val) => ( acc + val ), 0) })
+      } else if (flowtype === "Expense") {
+        this.setState({ expense: this.state.dropdown
+          .filter(object => object.flowtype === "Expense")
+          .map(object => object.amount)
+          .reduce((acc, val) => ( acc + val ), 0) }, () => this.setState({ balance: this.state.income - this.state.expense }))
+      }
+  
+    })
+  }
 
   renderDollars = (amount) => {
     return '$' + parseFloat(amount/100).toFixed(2)
@@ -44,7 +67,7 @@ export default class App extends React.Component {
       daysLeft: this.daysLeft(),
       balance: this.renderTotal("Income")-this.renderTotal("Expense"),
       }, 
-      () => (this.findFirstLast("2-1-2020"))
+      () => (this.findFirstLast(this.state.selectedMonth), this.futureTransactions())
     )
   }
 
@@ -64,7 +87,7 @@ export default class App extends React.Component {
   }
 
   futureTransactions = () => {
-    const today = new Date();
+    const today = new Date(Date.parse(this.state.selectedMonth));
     const formatToday = today.setDate(today.getDate() - 1);
     const endMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
     const formatEndMonth = endMonth.setDate(endMonth.getDate() + 1);
@@ -73,7 +96,7 @@ export default class App extends React.Component {
       today: today,
       endMonth: endMonth,
       futureTransactions: this.state.dropdown
-        .sort((t1, t2) => t1.date > t2.date)
+        .sort((t1, t2) => Date.parse(t1.date) > Date.parse(t2.date))
         .filter(transaction => Date.parse(transaction.date) >= formatToday && Date.parse(transaction.date) <= formatEndMonth)
     }, () => console.log('futureTransactions: ', this.state.futureTransactions))
   }
@@ -113,8 +136,8 @@ export default class App extends React.Component {
     }
   }
 
-  findFirstLast = (datetime) => {
-    formattedDate = new Date(datetime)
+  findFirstLast = () => {
+    formattedDate = new Date(this.state.selectedMonth)
     firstDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth(), 1)
     lastDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth() + 1, 0)
     const dates = this.state.transactionData.map(transaction => new Date(transaction.date))
@@ -125,13 +148,13 @@ export default class App extends React.Component {
       dropdown: this.state.transactionData
         .sort((t1, t2) => t1.date > t2.date)
         .filter(transaction => Date.parse(transaction.date) >= firstDay && Date.parse(transaction.date) <= lastDay)
-    }, () => console.log('dropdown after fetch: ', this.state.dropdown, " keys:", this.state.dropdownKeys))  
+    }, () => console.log('selected month: ', this.state.selectedMonth, ' dropdown after fetch: ', this.state.dropdown, 'future: ', this.state.futureTransactions))  
   }
 
   selected = (value) => {
     this.setState({
       selectedMonth: value
-    })
+    }, () => this.findFirstLast(this.state.selectedMonth), this.futureTransactions())
   }
 
   render() {

@@ -16,14 +16,14 @@ import RNPickerSelect from 'react-native-picker-select';
 export default class Home extends React.Component {
 
     render() {
-        const { balance, selected, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions, findFirstLast } = this.props.screenProps
+        const { balance, selected, dropdown, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions, findFirstLast } = this.props.screenProps
         const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
         const sectionAngles = d3.pie()
             .startAngle(-2*Math.PI)
-            .endAngle(-5*Math.PI)(totals)
+            .endAngle(-5*Math.PI)([((income - expense) / income), (expense/income)])
         const path = d3.arc().outerRadius(100).innerRadius(80)
-        const colors = d3.scaleLinear().domain([0, totals.length]).range([100, 255])
+        const colors = d3.scaleLinear().domain([0, 1]).range([100, 255])
 
         return(
             <View>
@@ -32,7 +32,7 @@ export default class Home extends React.Component {
                     <View style={pickerSelectStyles.inputIOS}>
                     <RNPickerSelect
                         placeholder={{ label: 'February 2020', value: '2-1-2020', color: '#6558F5' }}
-                        onValueChange={(value) => (findFirstLast(value), selected(value))}
+                        onValueChange={(value) => (selected(value))}
                         itemStyle={{flexDirection: 'row', alignItems: 'center'}}
                         items={[
                             { label: 'March 2020', value: '3-1-2020', color: '#6558F5' },
