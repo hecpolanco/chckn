@@ -11,11 +11,12 @@ import {
 
 import * as d3 from 'd3'
 import { ART } from 'react-native'
+import RNPickerSelect from 'react-native-picker-select';
 
 export default class Home extends React.Component {
 
     render() {
-        const { balance, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions } = this.props.screenProps
+        const { balance, selected, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions, findFirstLast } = this.props.screenProps
         const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
         const sectionAngles = d3.pie()
@@ -28,7 +29,18 @@ export default class Home extends React.Component {
             <View>
                 <View style={styles.headerContainer}>
                     <Text style={styles.transactionsHeader}>Hi, Hector!</Text>
-                    <Text style={styles.dateHeader}>February 2020</Text>
+                    <View style={pickerSelectStyles.inputIOS}>
+                    <RNPickerSelect
+                        placeholder={{ label: 'February 2020', value: '2-1-2020', color: '#6558F5' }}
+                        onValueChange={(value) => (findFirstLast(value), selected(value))}
+                        itemStyle={{flexDirection: 'row', alignItems: 'center'}}
+                        items={[
+                            { label: 'March 2020', value: '3-1-2020', color: '#6558F5' },
+                            { label: 'April 2020', value: '4-1-2020', color: '#6558F5' }
+                        ]}
+                    />
+                    </View>
+                    {/* <Text style={styles.dateHeader}>{this.props.screenProps.selectedMonth}</Text> */}
                 </View>
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
@@ -68,8 +80,8 @@ export default class Home extends React.Component {
                     <ScrollView style={styles.transactionItemContainer}>
                     <View style={styles.transactionMargin}>
                         {
-                            futureTransactions.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
-                            futureTransactions.map((transaction, index) => (
+                            this.props.screenProps.dropdown.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
+                            this.props.screenProps.dropdown.map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
@@ -103,13 +115,14 @@ const styles = StyleSheet.create({
     transactionsHeader: {
         fontSize: 25,
         fontWeight: 'bold',
+        top: 6
     },
-    dateHeader: {
-        fontSize: 25,
-        top: -29.5,
-        marginLeft: 210,
-        textAlign: 'right'
-    },
+    // dateHeader: {
+    //     fontSize: 25,
+    //     top: -29.5,
+    //     marginLeft: 210,
+    //     textAlign: 'right'
+    // },
     subHeaderContainer: {
         top: -20
     },
@@ -257,5 +270,23 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'right',
         color: '#6558F5'
+    }
+})
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        top: -23.5,
+        marginLeft: 267,
+        fontSize: 16,
+        paddingVertical: 11,
+        paddingHorizontal: 10,
+        paddingBottom: -10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: '#FFFFFF',
+        alignItems: 'center',
+        backgroundColor: '#6558F5',
+        width: 118,
     }
 })

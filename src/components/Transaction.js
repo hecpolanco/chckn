@@ -19,7 +19,7 @@ export default class Transaction extends React.Component {
             <View>
                 <View style={styles.headerContainer}>
                     <Text style={styles.transactionsHeader}>Transactions</Text>
-                    <Text style={styles.dateHeader}>February 2020</Text>
+                    <Text style={{opacity: 0}}>{this.props.screenProps.selectedMonth}</Text>
                 </View>
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
@@ -38,7 +38,7 @@ export default class Transaction extends React.Component {
 
                     <View style={styles.transactionMargin}>
                         {   
-                            this.props.screenProps.transactionData.sort((t1, t2) => t1.date > t2.date).filter(transaction => new Date(transaction.date) >= this.props.screenProps.today && new Date(transaction.date) <= this.props.screenProps.endMonth).map((transaction, index) => (
+                            this.props.screenProps.dropdown.sort((t1, t2) => t1.date > t2.date).map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
@@ -65,18 +65,19 @@ const styles = StyleSheet.create({
         marginBottom: 40,
         margin: 20,
         width: 385,
-        borderBottomWidth: 1
+        borderBottomWidth: 1,
+        paddingVertical: 7.5
     },
     transactionsHeader: {
         fontSize: 25,
         fontWeight: 'bold'
     },
-    dateHeader: {
-        fontSize: 25,
-        top: -29.5,
-        marginLeft: 210,
-        textAlign: 'right'
-    },
+    // dateHeader: {
+    //     fontSize: 25,
+    //     top: -29.5,
+    //     marginLeft: 210,
+    //     textAlign: 'right',
+    // },
     subHeaderContainer: {
         top: -20
     },

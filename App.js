@@ -15,7 +15,8 @@ export default class App extends React.Component {
     daysLeft: '',
     balance: '',
     dropdown: [],
-    dropdownKeys: []
+    dropdownKeys: [],
+    selectedMonth: ''
   }
 
   renderTotal = (flowtype) => this.state.transactionData
@@ -43,7 +44,7 @@ export default class App extends React.Component {
       daysLeft: this.daysLeft(),
       balance: this.renderTotal("Income")-this.renderTotal("Expense"),
       }, 
-      () => (this.futureTransactions(), this.findFirstLast("3-1-2020"))
+      () => (this.findFirstLast("2-1-2020"))
     )
   }
 
@@ -64,14 +65,14 @@ export default class App extends React.Component {
 
   futureTransactions = () => {
     const today = new Date();
-    formatToday = today.setDate(today.getDate() - 1);
+    const formatToday = today.setDate(today.getDate() - 1);
     const endMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
-    formatEndMonth = endMonth.setDate(endMonth.getDate() + 1);
+    const formatEndMonth = endMonth.setDate(endMonth.getDate() + 1);
     console.log(this.state.transactionData, today, endMonth)
     this.setState({
       today: today,
       endMonth: endMonth,
-      futureTransactions: this.state.transactionData
+      futureTransactions: this.state.dropdown
         .sort((t1, t2) => t1.date > t2.date)
         .filter(transaction => Date.parse(transaction.date) >= formatToday && Date.parse(transaction.date) <= formatEndMonth)
     }, () => console.log('futureTransactions: ', this.state.futureTransactions))
@@ -117,10 +118,7 @@ export default class App extends React.Component {
     firstDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth(), 1)
     lastDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth() + 1, 0)
     const dates = this.state.transactionData.map(transaction => new Date(transaction.date))
-      .map(date => {
-        if (!this.state.dropdownKeys.find(date => date.getMonth() + ' ' + date.getFullYear())) { 
-          return date.getMonth()+1 + '-1-' + date.getFullYear() 
-        }
+      .map(date => { return date.getMonth()+1 + '-1-' + date.getFullYear()
       })
     this.setState({
       dropdownKeys: [...new Set (dates)],
@@ -128,6 +126,12 @@ export default class App extends React.Component {
         .sort((t1, t2) => t1.date > t2.date)
         .filter(transaction => Date.parse(transaction.date) >= firstDay && Date.parse(transaction.date) <= lastDay)
     }, () => console.log('dropdown after fetch: ', this.state.dropdown, " keys:", this.state.dropdownKeys))  
+  }
+
+  selected = (value) => {
+    this.setState({
+      selectedMonth: value
+    })
   }
 
   render() {
@@ -146,7 +150,12 @@ export default class App extends React.Component {
         renderDollars: this.renderDollars,
         renderDayNumber: this.renderDayNumber,
         renderDayName: this.renderDayName,
-        balance: this.state.balance
+        balance: this.state.balance,
+        dropdown: this.state.dropdown,
+        dropdownKeys: this.state.dropdownKeys,
+        findFirstLast: this.findFirstLast,
+        selected: this.selected,
+        selectedMonth: this.state.selectedMonth
       }} />
     )
   }
