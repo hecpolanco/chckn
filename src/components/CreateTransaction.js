@@ -41,44 +41,21 @@ export default class CreateTransaction extends React.Component {
     }
 
     submit = () => {
-        if (this.state.flowtype === 0) {
-            let flowtype = "Income"
-            fetch('http://localhost:3000/cashflows', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ account_id: 1, batch_id: 1, name: this.state.name, date: this.state.chosenDate, amount: this.state.amount*100, flowtype: flowtype })
-            })
-            .then(res => res.json())
-            .then(newTransactionObj => (
-                fetch('http://localhost:3000/cashflows')
-                .then(res => res.json())
-                .then(transactionData => {
-                this.setState({ transactionData }, () => (this.props.screenProps.updateTransactionData(), this.props.navigation.navigate('Transaction')))
-                }))
+        const flowtype = this.state.flowtype === 0 ? "Income" : "Expense"
+        fetch('http://localhost:3000/cashflows', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ account_id: 1, batch_id: 1, name: this.state.name, date: this.state.chosenDate, amount: this.state.amount*100, flowtype })
+        })
+        .then(res => res.json())
+        .then(newTransactionObj => (
+            this.props.screenProps.refetch(this.props.screenProps.selectedMonth),
+            this.props.navigation.navigate('Transaction')
             )
-        } else if (this.state.flowtype === 1) {
-            let flowtype = "Expense"
-            fetch('http://localhost:3000/cashflows', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ account_id: 1, batch_id: 1, name: this.state.name, date: this.state.chosenDate, amount: this.state.amount*100, flowtype: flowtype })
-            })
-            .then(res => res.json())
-            .then(newTransactionObj => (
-                this.props.navigation.navigate('Transaction'),
-                fetch('http://localhost:3000/cashflows')
-                .then(res => res.json())
-                .then(transactionData => {
-                this.setState({ transactionData }, () => (this.props.screenProps.updateTransactionData(), this.props.screenProps.findFirstLast(newTransactionObj.date), this.props.navigation.navigate('Transaction')))
-                })
-            ))
-        }
+        )
     }
 
     render() {

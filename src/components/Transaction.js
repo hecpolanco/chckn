@@ -12,7 +12,7 @@ import {
 export default class Transaction extends React.Component {
 
     render() {
-        const { income, expense, renderDollars, renderDayName, renderDayNumber } = this.props.screenProps
+        const { income, expense, renderDollars, renderDayName, renderDayNumber, transactionData } = this.props.screenProps
         const { navigate } = this.props.navigation
 
         return(
@@ -38,7 +38,7 @@ export default class Transaction extends React.Component {
 
                     <View style={styles.transactionMargin}>
                         {   
-                            this.props.screenProps.dropdown.sort((t1, t2) => t1.date > t2.date).map((transaction, index) => (
+                            transactionData.map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>

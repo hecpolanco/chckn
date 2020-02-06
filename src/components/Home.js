@@ -16,7 +16,7 @@ import RNPickerSelect from 'react-native-picker-select';
 export default class Home extends React.Component {
 
     render() {
-        const { balance, selected, dropdown, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions, findFirstLast } = this.props.screenProps
+        const { balance, selected, refetch, dropdown, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions, findFirstLast } = this.props.screenProps
         const { navigate } = this.props.navigation
         const { Surface, Group, Shape } = ART
         const sectionAngles = d3.pie()
@@ -32,7 +32,7 @@ export default class Home extends React.Component {
                     <View style={pickerSelectStyles.inputIOS}>
                     <RNPickerSelect
                         placeholder={{ label: 'February 2020', value: '2-1-2020', color: '#6558F5' }}
-                        onValueChange={(value) => (selected(value))}
+                        onValueChange={(value) => (refetch(value))}
                         itemStyle={{flexDirection: 'row', alignItems: 'center'}}
                         items={[
                             { label: 'March 2020', value: '3-1-2020', color: '#6558F5' },
@@ -67,7 +67,7 @@ export default class Home extends React.Component {
                 <Text style={styles.available}>Available</Text>
                 <View style={styles.spendAllowanceContainer}>
                     <Text style={styles.spendAllowance}>Spend Allowance</Text>
-                    {balance < 0 ? <Text style={styles.spendAllowanceAmountNegative}>{renderDollars((balance)/daysLeft)} per day</Text> : <Text style={styles.spendAllowanceAmount}>{renderDollars((balance)/daysLeft)} per day</Text>}
+                    {balance < 0 ? <Text style={styles.spendAllowanceAmountNegative}>{renderDollars(daysLeft)} per day</Text> : <Text style={styles.spendAllowanceAmount}>{renderDollars(daysLeft)} per day</Text>}
                 </View>
                 <View style={styles.futureTransactionsContainer}>
                     <Text style={styles.futureTransactionsText}>Future Transactions</Text>
@@ -80,8 +80,8 @@ export default class Home extends React.Component {
                     <ScrollView style={styles.transactionItemContainer}>
                     <View style={styles.transactionMargin}>
                         {
-                            this.props.screenProps.dropdown.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
-                            this.props.screenProps.dropdown.map((transaction, index) => (
+                            futureTransactions.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
+                            futureTransactions.map((transaction, index) => (
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>

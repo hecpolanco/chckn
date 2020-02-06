@@ -6,99 +6,92 @@ const AppContainer = createAppContainer(BottomNav);
 
 export default class App extends React.Component {
   state = {
+    selectedMonth: '2-1-2020',
     transactionData: [],
-    selectedTransactions: [],
     futureTransactions: [],
     totals: [],
     income: '',
     expense: '',
     daysLeft: '',
-    balance: '',
-    dropdown: [],
-    dropdownKeys: [],
-    selectedMonth: '2-1-2020'
+    balance: ''
+  }
+  
+  componentDidMount() {
+    this.fetchAll('2020-2-1', '2020-2-29')
   }
 
-  renderTotal = (flowtype) => {
-    formattedDate = new Date(this.state.selectedMonth)
-    firstDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth(), 1)
-    lastDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth() + 1, 0)
-    const dates = this.state.transactionData.map(transaction => new Date(transaction.date))
-      .map(date => { return date.getMonth()+1 + '-1-' + date.getFullYear()
-      })
-    this.setState({
-      dropdownKeys: [...new Set (dates)],
-      dropdown: this.state.transactionData
-        .sort((t1, t2) => t1.date > t2.date)
-        .filter(transaction => Date.parse(transaction.date) >= firstDay && Date.parse(transaction.date) <= lastDay)
-    }, () => { 
-      if (flowtype === "Income") {
-        this.setState({ income: this.state.dropdown
-          .filter(object => object.flowtype === "Income")
-          .map(object => object.amount)
-          .reduce((acc, val) => ( acc + val ), 0) })
-      } else if (flowtype === "Expense") {
-        this.setState({ expense: this.state.dropdown
-          .filter(object => object.flowtype === "Expense")
-          .map(object => object.amount)
-          .reduce((acc, val) => ( acc + val ), 0) }, () => this.setState({ balance: this.state.income - this.state.expense }))
-      }
-  
+  fetchTransactions = (startDate, endDate) => {
+    fetch(`http://localhost:3000/cashflows/${startDate}&${endDate}`)
+    .then(res => res.json())
+    .then(transactionData => {
+      this.setState({ transactionData }, () => this.futureTransactions())
     })
+  }
+
+  fetchIncome = (startDate, endDate) => {
+    fetch(`http://localhost:3000/cashflows/income/${startDate}&${endDate}`)
+    .then(res => res.json())
+    .then(income => {
+      this.setState({ income })
+    })
+  }
+
+  fetchExpense = (startDate, endDate) => {
+    fetch(`http://localhost:3000/cashflows/expense/${startDate}&${endDate}`)
+    .then(res => res.json())
+    .then(expense => {
+      this.setState({ expense })
+    })
+  }
+
+  fetchBalance = (startDate, endDate) => {
+    fetch(`http://localhost:3000/cashflows/balance/${startDate}&${endDate}`)
+    .then(res => res.json())
+    .then(balance => {
+      this.setState({ balance })
+    })
+  }
+
+  fetchSpendAllowance = (startDate, endDate) => {
+    fetch(`http://localhost:3000/cashflows/spend_allowance/${startDate}&${endDate}`)
+    .then(res => res.json())
+    .then(daysLeft => {
+      this.setState({ daysLeft })
+    })
+  }
+
+  fetchAll = (startDate, endDate) => {
+    this.fetchTransactions(startDate, endDate)
+    this.fetchIncome(startDate, endDate)
+    this.fetchExpense(startDate, endDate)
+    this.fetchBalance(startDate, endDate)
+    this.fetchSpendAllowance(startDate, endDate)
+  }
+
+  refetch = (selectedMonth) => {
+    this.setState({ selectedMonth })
+    const convertedDate = new Date(selectedMonth)
+    const convertedFirstDay = new Date(convertedDate.getFullYear(), convertedDate.getMonth(), 1)
+    const convertedLastDay = new Date(convertedDate.getFullYear(), convertedDate.getMonth() + 1, 0)
+    
+    const startDate = convertedFirstDay.getFullYear() + '-' + (parseInt(convertedFirstDay.getMonth())+1) + '-' + convertedFirstDay.getDate()
+    const endDate = convertedLastDay.getFullYear() + '-' + (parseInt(convertedLastDay.getMonth())+1) + '-' + convertedLastDay.getDate()
+    this.fetchAll(startDate, endDate)
   }
 
   renderDollars = (amount) => {
     return '$' + parseFloat(amount/100).toFixed(2)
   }
 
-  componentDidMount() {
-    fetch('http://localhost:3000/cashflows')
-    .then(res => res.json())
-    .then(transactionData => {
-      this.setState({ transactionData }, () => this.computeTotals())
-    })
-  }
-  
-  computeTotals = () => {
-    this.setState({
-      totals: [((this.renderTotal("Income")-this.renderTotal("Expense"))/this.renderTotal("Income")), (this.renderTotal("Expense")/this.renderTotal("Income"))],
-      income: this.renderTotal("Income"),
-      expense: this.renderTotal("Expense"),
-      daysLeft: this.daysLeft(),
-      balance: this.renderTotal("Income")-this.renderTotal("Expense"),
-      }, 
-      () => (this.findFirstLast(this.state.selectedMonth), this.futureTransactions())
-    )
-  }
-
-  updateTransactionData = () => {
-    fetch('http://localhost:3000/cashflows')
-    .then(res => res.json())
-    .then(transactionData => {
-      this.setState({ transactionData }, () => this.computeTotals())
-    })
-  }
-
-  daysLeft = () => {
-    today=new Date();
-    endMonth=new Date(today.getFullYear(), today.getMonth()+1, 0);
-    oneDay=1000*60*60*24; //1000ms is 1second - 60seconds is 1minute - 60minutes is 1hour - 24hours is 1day 
-    return Math.ceil((endMonth.getTime()-today.getTime())/(oneDay));
-  }
 
   futureTransactions = () => {
-    const today = new Date(Date.parse(this.state.selectedMonth));
+    const today = new Date();
     const formatToday = today.setDate(today.getDate() - 1);
-    const endMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
-    const formatEndMonth = endMonth.setDate(endMonth.getDate() + 1);
-    console.log(this.state.transactionData, today, endMonth)
+    
     this.setState({
-      today: today,
-      endMonth: endMonth,
-      futureTransactions: this.state.dropdown
-        .sort((t1, t2) => Date.parse(t1.date) > Date.parse(t2.date))
-        .filter(transaction => Date.parse(transaction.date) >= formatToday && Date.parse(transaction.date) <= formatEndMonth)
-    }, () => console.log('futureTransactions: ', this.state.futureTransactions))
+      futureTransactions: this.state.transactionData
+        .filter(transaction => Date.parse(transaction.date) >= formatToday)
+    })
   }
 
   renderDayNumber = (datetime) => {
@@ -136,27 +129,6 @@ export default class App extends React.Component {
     }
   }
 
-  findFirstLast = () => {
-    formattedDate = new Date(this.state.selectedMonth)
-    firstDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth(), 1)
-    lastDay = new Date(formattedDate.getFullYear(), formattedDate.getMonth() + 1, 0)
-    const dates = this.state.transactionData.map(transaction => new Date(transaction.date))
-      .map(date => { return date.getMonth()+1 + '-1-' + date.getFullYear()
-      })
-    this.setState({
-      dropdownKeys: [...new Set (dates)],
-      dropdown: this.state.transactionData
-        .sort((t1, t2) => t1.date > t2.date)
-        .filter(transaction => Date.parse(transaction.date) >= firstDay && Date.parse(transaction.date) <= lastDay)
-    }, () => console.log('selected month: ', this.state.selectedMonth, ' dropdown after fetch: ', this.state.dropdown, 'future: ', this.state.futureTransactions))  
-  }
-
-  selected = (value) => {
-    this.setState({
-      selectedMonth: value
-    }, () => this.findFirstLast(this.state.selectedMonth), this.futureTransactions())
-  }
-
   render() {
     return (
       <AppContainer screenProps={{
@@ -174,10 +146,8 @@ export default class App extends React.Component {
         renderDayNumber: this.renderDayNumber,
         renderDayName: this.renderDayName,
         balance: this.state.balance,
-        dropdown: this.state.dropdown,
-        dropdownKeys: this.state.dropdownKeys,
-        findFirstLast: this.findFirstLast,
         selected: this.selected,
+        refetch: this.refetch,
         selectedMonth: this.state.selectedMonth
       }} />
     )
