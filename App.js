@@ -2,81 +2,76 @@ import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import BottomNav from './src/index';
 
+import * as d3 from 'd3';
+import { ART } from 'react-native';
+
 const AppContainer = createAppContainer(BottomNav);
 
 export default class App extends React.Component {
   state = {
-    selectedMonth: '2-1-2020',
+    selectedMonth: '2020-2-1',
     transactionData: [],
     futureTransactions: [],
-    totals: [],
     income: '',
     expense: '',
-    daysLeft: '',
-    balance: ''
+    balance: '',
+    daysLeft: ''
   }
   
   componentDidMount() {
-    this.fetchAll('2020-2-1', '2020-2-29')
+    this.fetchAll('2020-2-1')
   }
 
-  fetchTransactions = (startDate, endDate) => {
-    fetch(`http://localhost:3000/cashflows/${startDate}&${endDate}`)
+  fetchTransactions = (startDate) => {
+    fetch(`http://localhost:3000/cashflows/${startDate}`)
     .then(res => res.json())
     .then(transactionData => {
       this.setState({ transactionData }, () => this.futureTransactions())
     })
   }
 
-  fetchIncome = (startDate, endDate) => {
-    fetch(`http://localhost:3000/cashflows/income/${startDate}&${endDate}`)
+  fetchIncome = (startDate) => {
+    fetch(`http://localhost:3000/cashflows/income/${startDate}`)
     .then(res => res.json())
     .then(income => {
       this.setState({ income })
     })
   }
 
-  fetchExpense = (startDate, endDate) => {
-    fetch(`http://localhost:3000/cashflows/expense/${startDate}&${endDate}`)
+  fetchExpense = (startDate) => {
+    fetch(`http://localhost:3000/cashflows/expense/${startDate}`)
     .then(res => res.json())
     .then(expense => {
       this.setState({ expense })
     })
   }
 
-  fetchBalance = (startDate, endDate) => {
-    fetch(`http://localhost:3000/cashflows/balance/${startDate}&${endDate}`)
+  fetchBalance = (startDate) => {
+    fetch(`http://localhost:3000/cashflows/balance/${startDate}`)
     .then(res => res.json())
     .then(balance => {
       this.setState({ balance })
     })
   }
 
-  fetchSpendAllowance = (startDate, endDate) => {
-    fetch(`http://localhost:3000/cashflows/spend_allowance/${startDate}&${endDate}`)
+  fetchSpendAllowance = (startDate) => {
+    fetch(`http://localhost:3000/cashflows/spend_allowance/${startDate}`)
     .then(res => res.json())
     .then(daysLeft => {
-      this.setState({ daysLeft })
+      this.setState({ daysLeft }, ()=> console.log('selected: ', this.state.selectedMonth, 'trans: ', this.state.transactionData, 'futuretrans: ', this.state.futureTransactions, 'income: ', this.state.income, 'expense: ', this.state.expense, 'balance: ', this.state.balance, 'days: ', this.state.daysLeft))
     })
   }
 
-  fetchAll = (startDate, endDate) => {
-    this.fetchTransactions(startDate, endDate)
-    this.fetchIncome(startDate, endDate)
-    this.fetchExpense(startDate, endDate)
-    this.fetchBalance(startDate, endDate)
-    this.fetchSpendAllowance(startDate, endDate)
+  fetchAll = (startDate) => {
+    this.fetchTransactions(startDate)
+    this.fetchIncome(startDate)
+    this.fetchExpense(startDate)
+    this.fetchBalance(startDate)
+    this.fetchSpendAllowance(startDate)
   }
 
   refetch = (selectedMonth) => {
-    this.setState({ selectedMonth })
-    const convertedDate = new Date(selectedMonth)
-    const convertedFirstDay = new Date(convertedDate.getFullYear(), convertedDate.getMonth(), 1)
-    const convertedLastDay = new Date(convertedDate.getFullYear(), convertedDate.getMonth() + 1, 0)
-    
-    const startDate = convertedFirstDay.getFullYear() + '-' + (parseInt(convertedFirstDay.getMonth())+1) + '-' + convertedFirstDay.getDate()
-    const endDate = convertedLastDay.getFullYear() + '-' + (parseInt(convertedLastDay.getMonth())+1) + '-' + convertedLastDay.getDate()
-    this.fetchAll(startDate, endDate)
+    this.setState({ selectedMonth }, ()=> this.fetchAll(selectedMonth))
   }
 
   renderDollars = (amount) => {
@@ -124,31 +119,65 @@ export default class App extends React.Component {
             return "SAT"
             break;
         default:
-            return "NaN"
+            return ""
             break;
+    }
+  }
+
+  fetchPie = () => {
+    const { Surface, Group, Shape } = ART
+    const path = d3.arc().outerRadius(100).innerRadius(80)
+    const colors = d3.scaleLinear().domain([0, 1]).range([100, 255])
+    if (this.state.income > 0 && this.state.expense > 0) {
+      const array = [((this.state.income - this.state.expense)/this.state.income), (this.state.expense/this.state.income)]
+      const sectionAngles = d3.pie().startAngle(-2*Math.PI).endAngle(-5*Math.PI)(array)
+
+      return <Surface width={500} height={500}>
+              <Group x={500/2} y={500/2}>
+                  {
+                  sectionAngles.map(section => (
+                      <Shape
+                          key={section.index}
+                          d={path(section)}
+                          fill={`rgb(101,88,245,${colors(section.index)/250})`}
+                      />
+                  ))
+                  }  
+              </Group>
+            </Surface>
+    } else {
+      const sectionAngles = d3.pie().startAngle(-2*Math.PI).endAngle(-5*Math.PI)([0,1])
+
+      return <Surface width={500} height={500}>
+              <Group x={500/2} y={500/2}>
+                  {
+                    sectionAngles.map(section => (
+                      <Shape
+                        key={section.index}
+                        d={path(section)}
+                        fill={`rgb(101,88,245,${colors(section.index)/250})`}
+                      />))
+                  }  
+              </Group>
+            </Surface>
     }
   }
 
   render() {
     return (
       <AppContainer screenProps={{
+        selectedMonth: this.state.selectedMonth,
         transactionData: this.state.transactionData, 
-        updateTransactionData: this.updateTransactionData,
-        computeTotals: this.computeTotals,
-        totals: this.state.totals,
+        futureTransactions: this.state.futureTransactions,
         income: this.state.income,
         expense: this.state.expense,
-        futureTransactions: this.state.futureTransactions,
+        balance: this.state.balance,
         daysLeft: this.state.daysLeft,
-        today: this.state.today,
-        endMonth: this.state.endMonth,
         renderDollars: this.renderDollars,
         renderDayNumber: this.renderDayNumber,
         renderDayName: this.renderDayName,
-        balance: this.state.balance,
-        selected: this.selected,
         refetch: this.refetch,
-        selectedMonth: this.state.selectedMonth
+        fetchPie: this.fetchPie
       }} />
     )
   }

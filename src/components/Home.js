@@ -15,55 +15,59 @@ import RNPickerSelect from 'react-native-picker-select';
 
 export default class Home extends React.Component {
 
-    render() {
-        const { balance, selected, refetch, dropdown, income, expense, totals, daysLeft, renderDollars, renderDayName, renderDayNumber, futureTransactions, findFirstLast } = this.props.screenProps
-        const { navigate } = this.props.navigation
-        const { Surface, Group, Shape } = ART
-        const sectionAngles = d3.pie()
-            .startAngle(-2*Math.PI)
-            .endAngle(-5*Math.PI)([((income - expense) / income), (expense/income)])
-        const path = d3.arc().outerRadius(100).innerRadius(80)
-        const colors = d3.scaleLinear().domain([0, 1]).range([100, 255])
+    // selectedMonth: this.state.selectedMonth,
+    //     transactionData: this.state.transactionData, 
+    //     futureTransactions: this.state.futureTransactions,
+    //     income: this.state.income,
+    //     expense: this.state.expense,
+    //     balance: this.state.balance,
+    //     daysLeft: this.state.daysLeft,
+    //     renderDollars: this.renderDollars,
+    //     renderDayNumber: this.renderDayNumber,
+    //     renderDayName: this.renderDayName,
+    //     refetch: this.refetch,
 
+    render() {
+        const { navigate } = this.props.navigation
+        const { 
+            balance, 
+            refetch, 
+            income, 
+            expense, 
+            daysLeft, 
+            renderDollars, 
+            renderDayName, 
+            renderDayNumber, 
+            futureTransactions 
+        } = this.props.screenProps
+        
         return(
             <View>
                 <View style={styles.headerContainer}>
                     <Text style={styles.transactionsHeader}>Hi, Hector!</Text>
                     <View style={pickerSelectStyles.inputIOS}>
-                    <RNPickerSelect
-                        placeholder={{ label: 'February 2020', value: '2-1-2020', color: '#6558F5' }}
-                        onValueChange={(value) => (refetch(value))}
-                        itemStyle={{flexDirection: 'row', alignItems: 'center'}}
-                        items={[
-                            { label: 'March 2020', value: '3-1-2020', color: '#6558F5' },
-                            { label: 'April 2020', value: '4-1-2020', color: '#6558F5' }
-                        ]}
-                    />
+                        <RNPickerSelect
+                            placeholder={{ label: 'February 2020', value: '2020-2-1', color: '#6558F5' }}
+                            onValueChange={(value) => (refetch(value))}
+                            items={[
+                                { label: 'March 2020', value: '2020-3-1', color: '#6558F5' },
+                                { label: 'April 2020', value: '2020-4-1', color: '#6558F5' }
+                            ]}
+                        />
                     </View>
-                    {/* <Text style={styles.dateHeader}>{this.props.screenProps.selectedMonth}</Text> */}
                 </View>
+
                 <View style={styles.subHeaderContainer}>
                     <Text style={styles.incomeSubHeader}>Income</Text>
                     <Text style={styles.expensesSubHeader}>Expenses</Text>
+
                     <Text style={styles.incomeTotalValue}>{renderDollars(income)}</Text>
                     <Text style={styles.expensesTotalValue}>{renderDollars(expense)}</Text>
                 </View>
 
                 <View style={styles.chartContainer}>
-                <Surface width={500} height={500}>
-                    <Group x={500/2} y={500/2}>
-                        {
-                        sectionAngles.map(section => (
-                            <Shape
-                                key={section.index}
-                                d={path(section)}
-                                fill={`rgb(101,88,245,${colors(section.index)/250})`}
-                            />
-                        ))
-                        }  
-                    </Group>
-                </Surface>
-                {income-expense < 0 ? <Text style={styles.availableAmountNegative}>{renderDollars(balance)}</Text> : <Text style={styles.availableAmount}>{renderDollars(balance)}</Text>}
+                    {this.props.screenProps.fetchPie()}
+                    {income-expense < 0 ? <Text style={styles.availableAmountNegative}>{renderDollars(balance)}</Text> : <Text style={styles.availableAmount}>{renderDollars(balance)}</Text>}
                 <Text style={styles.available}>Available</Text>
                 <View style={styles.spendAllowanceContainer}>
                     <Text style={styles.spendAllowance}>Spend Allowance</Text>
