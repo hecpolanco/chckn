@@ -9,23 +9,12 @@ import {
     TouchableOpacity
 } from 'react-native'
 
+import Swipeout from 'react-native-swipeout'
 import * as d3 from 'd3'
 import { ART } from 'react-native'
 import RNPickerSelect from 'react-native-picker-select';
 
 export default class Home extends React.Component {
-
-    // selectedMonth: this.state.selectedMonth,
-    //     transactionData: this.state.transactionData, 
-    //     futureTransactions: this.state.futureTransactions,
-    //     income: this.state.income,
-    //     expense: this.state.expense,
-    //     balance: this.state.balance,
-    //     daysLeft: this.state.daysLeft,
-    //     renderDollars: this.renderDollars,
-    //     renderDayNumber: this.renderDayNumber,
-    //     renderDayName: this.renderDayName,
-    //     refetch: this.refetch,
 
     render() {
         const { navigate } = this.props.navigation
@@ -86,7 +75,20 @@ export default class Home extends React.Component {
                         {
                             futureTransactions.length === 0 ? <Text style={styles.newTransaction} onPress={() => {navigate('CreateTransaction')}}>Click here to add a new transaction</Text> : 
                             futureTransactions.map((transaction, index) => (
+                                swipeoutBtns = [
+                                    {
+                                        text: 'Edit',
+                                        backgroundColor: '#6558F5',
+                                        onPress: () => (console.log("add edit functionality here"))
+                                    },
+                                    {
+                                        text: 'Delete',
+                                        backgroundColor: 'red',
+                                        onPress: () => (this.props.screenProps.swipeOnPress(transaction.id), console.log(transaction.id))
+                                    }
+                                ],
                                 <View key={index}>
+                                    <Swipeout right={swipeoutBtns} style={{backgroundColor: "#F2F2F2"}}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
                                         <Text style={styles.transactionItemDateNumber}>{renderDayNumber(transaction.date)}</Text>
@@ -95,6 +97,7 @@ export default class Home extends React.Component {
                                             {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{renderDollars(transaction.amount)}</Text>: <Text style={styles.transactionExpenseItem}>{renderDollars(transaction.amount)}</Text>}
                                         </View>
                                     </TouchableWithoutFeedback>
+                                    </Swipeout>
                                 </View>
                             ))
                         }

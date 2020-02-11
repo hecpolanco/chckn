@@ -23,7 +23,7 @@ export default class App extends React.Component {
   }
 
   fetchTransactions = (startDate) => {
-    fetch(`http://localhost:3000/cashflows/${startDate}`)
+    fetch(`http://localhost:3000/cashflows/date/${startDate}`)
     .then(res => res.json())
     .then(transactionData => {
       this.setState({ transactionData }, () => this.futureTransactions())
@@ -163,6 +163,15 @@ export default class App extends React.Component {
     }
   }
 
+  swipeOnPress = (id) => {
+    fetch(`http://localhost:3000/cashflows/${id}`, {
+      method: 'POST',
+      body: JSON.stringify(id)
+    })
+    .then(res => res.json())
+    .then(transactionData => this.refetch(this.state.selectedMonth))
+  }
+
   render() {
     return (
       <AppContainer screenProps={{
@@ -177,7 +186,8 @@ export default class App extends React.Component {
         renderDayNumber: this.renderDayNumber,
         renderDayName: this.renderDayName,
         refetch: this.refetch,
-        fetchPie: this.fetchPie
+        fetchPie: this.fetchPie,
+        swipeOnPress: this.swipeOnPress
       }} />
     )
   }
