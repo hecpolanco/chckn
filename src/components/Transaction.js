@@ -1,4 +1,5 @@
 import React from 'react'
+import Swipeout from 'react-native-swipeout'
 
 import {
     View,
@@ -39,13 +40,28 @@ export default class Transaction extends React.Component {
                     <View style={styles.transactionMargin}>
                         {   
                             transactionData.map((transaction, index) => (
+                                swipeoutBtns = [
+                                    {
+                                        text: 'Edit',
+                                        backgroundColor: '#6558F5',
+                                        onPress: () => (console.log("add edit functionality here"))
+                                    },
+                                    {
+                                        text: 'Delete',
+                                        backgroundColor: 'red',
+                                        fontWeight: 'bold',
+                                        onPress: () => (this.props.screenProps.swipeOnPress(transaction.id), console.log(transaction.id))
+                                    }
+                                ],
                                 <View key={index}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
+                                        <Swipeout right={swipeoutBtns} style={{backgroundColor: "#F2F2F2"}}>
                                         <Text style={styles.transactionItemDateNumber}>{renderDayNumber(transaction.date)}</Text>
                                             <Text style={styles.transactionItemDateName}>{renderDayName(transaction.date)}</Text>
                                             <Text style={styles.transactionItemName}>{transaction.name}</Text>
                                             {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{renderDollars(transaction.amount)}</Text>: <Text style={styles.transactionExpenseItem}>{renderDollars(transaction.amount)}</Text>}
+                                        </Swipeout>
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
@@ -126,6 +142,7 @@ const styles = StyleSheet.create({
     transactionItem: {
         marginLeft: 20,
         marginRight: 20,
+        paddingBottom: -1,
         borderBottomWidth: 1,
     },
     transactionItemDateNumber: {
