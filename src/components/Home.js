@@ -88,16 +88,16 @@ export default class Home extends React.Component {
                                     }
                                 ],
                                 <View key={index}>
-                                    <Swipeout right={swipeoutBtns} style={{backgroundColor: "#F2F2F2"}}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.transactionItem}>
+                                        <Swipeout right={swipeoutBtns} style={{backgroundColor: "#F2F2F2"}}>
                                         <Text style={styles.transactionItemDateNumber}>{renderDayNumber(transaction.date)}</Text>
                                             <Text style={styles.transactionItemDateName}>{renderDayName(transaction.date)}</Text>
                                             <Text style={styles.transactionItemName}>{transaction.name}</Text>
                                             {transaction.flowtype === 'Income' ? <Text style={styles.transactionIncomeItem}>{renderDollars(transaction.amount)}</Text>: <Text style={styles.transactionExpenseItem}>{renderDollars(transaction.amount)}</Text>}
+                                        </Swipeout>
                                         </View>
                                     </TouchableWithoutFeedback>
-                                    </Swipeout>
                                 </View>
                             ))
                         }
